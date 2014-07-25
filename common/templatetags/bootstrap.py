@@ -5,6 +5,7 @@ Created on Sep 21, 2013
 '''
 from django import template
 from django.forms.fields import DateField, DateTimeField
+from django.forms.widgets import CheckboxInput
 
 register = template.Library()
 
@@ -13,7 +14,10 @@ register = template.Library()
 def form_requirements(form):
     context = {}
     for bound_field in form:
-        bound_field.field.widget.attrs['class'] = 'form-control'
+        if isinstance(bound_field.field.widget, CheckboxInput):
+            bound_field.field.input_type = 'checkbox'
+        else:
+            bound_field.field.widget.attrs['class'] = 'form-control'
         if isinstance(bound_field.field, (DateField, DateTimeField)):
             context['datetimepicker'] = True
             if isinstance(bound_field.field, DateField):

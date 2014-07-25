@@ -21,7 +21,7 @@ def back_url(_, token):
 
 
 class BackUrlNode(template.Node):
-    def __init__(self, default=None, prepend=None, redirect_field_name=REDIRECT_FIELD_NAME):
+    def __init__(self, tag, prepend=None, default=None, redirect_field_name=REDIRECT_FIELD_NAME):
         self._prepend = prepend
         self._default = default
         self._redirect_field_name = redirect_field_name

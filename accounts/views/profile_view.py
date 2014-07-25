@@ -16,21 +16,22 @@ class EditProfileView(UpdateView):
     template = "accounts/edit_profile.html"
 
     def _render(self, request, **kwargs):
-        data = {}
-        data['active_profile'] = True
+        data = {
+            'active_profile': True,
+        }
 
         data.update(**kwargs)
         return TemplateResponse(request, self.template, data)
 
     @method_decorator(login_required)
     def get(self, request):
-        profile_form = UserForm(instance=request.user.get_profile())
+        profile_form = UserForm(instance=request.user)
 
         return self._render(request, profile_form=profile_form)
 
     @method_decorator(login_required)
     def post(self, request):
-        profile_form = UserForm(request.POST, instance=request.user.get_profile())
+        profile_form = UserForm(request.POST, request.FILES, instance=request.user)
 
         if profile_form.is_valid():
             profile_form.save()
@@ -45,7 +46,7 @@ class ProfileView(View):
 
     @method_decorator(login_required)
     def get(self, request):
-        data = {}
+        data = dict()
         data['user'] = request.user
         data['profile'] = request.user
         data['active_profile'] = True

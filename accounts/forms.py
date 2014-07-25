@@ -11,3 +11,5 @@ from accounts.models import User
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
+        exclude = ('username', 'user_permissions', 'groups', 'is_superuser', 'password', 'last_login',
+                   'date_joined', 'is_active', 'is_staff', 'first_name', 'last_name', )

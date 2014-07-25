@@ -1,7 +1,9 @@
 /env
-local_settings.py
+/local_settings.py
 *.pyc
-.project
-.settings/
-.pydevproject
-.idea/
+/.project
+/.settings/
+/.pydevproject
+/.idea/
+/static/
+/media/

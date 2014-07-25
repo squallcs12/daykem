@@ -26,6 +26,10 @@
                             jQuery('#datetimepicker_{{ field.auto_id }}').datetimepicker();
                         });
                     </script>
+                {% elif field.field.input_type == 'checkbox' %}
+                    <div class="checkbox">
+                        {{  field  }}
+                    </div>
                 {% else %}
                     {{ field }}
                 {% endif %}

@@ -22,9 +22,13 @@ urlpatterns = patterns(
     name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout',
         {'template_name': 'accounts/logged_out.html'}, name='logout'),
-    url(r'^password_change/$', 'django.contrib.auth.views.password_change', {
-        'template_name': 'accounts/password_change.html',
-    }, name='password_change'),
+    url(r'^password_change/$', 'django.contrib.auth.views.password_change',
+        {
+            'template_name': 'accounts/password_change.html',
+            'extra_context': {
+                'active_changepassword': True,
+            },
+        }, name='password_change'),
     url(r'^password_change/done/$', 'django.contrib.auth.views.password_change_done',
         {'template_name': 'accounts/password_change_done.html'}, name='password_change_done'),
     url(r'^password_set/done/$', 'accounts.views.set_password_view.done', name='password_set_done'),

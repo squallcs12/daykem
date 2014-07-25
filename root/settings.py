@@ -64,6 +64,7 @@ INSTALLED_APPS = (
     'accounts',
     'social.apps.django_app.default',
     'awesome_avatar',
+    'postman',
     'common',
 )
 
@@ -131,7 +132,9 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 )
-
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'templates'),
+)
 AUTH_USER_MODEL = 'accounts.User'
 AWESOME_AVATAR = {
     'width': 200,

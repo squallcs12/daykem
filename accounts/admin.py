@@ -6,7 +6,8 @@ Created on Apr 13, 2014
 from awesome_avatar.fields import AvatarField
 from awesome_avatar.widgets import AvatarWidget
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, _
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.utils.translation import ugettext_lazy as _
 from accounts import models
 
 

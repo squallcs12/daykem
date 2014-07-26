@@ -5,7 +5,6 @@ Created on Aug 25, 2013
 '''
 from selenium.common.exceptions import NoSuchWindowException
 from lettuce_setup.function import *
-import facebook
 from django.conf import settings
 
 

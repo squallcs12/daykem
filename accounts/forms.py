@@ -13,3 +13,12 @@ class UserForm(forms.ModelForm):
         model = User
         exclude = ('username', 'user_permissions', 'groups', 'is_superuser', 'password', 'last_login',
                    'date_joined', 'is_active', 'is_staff', 'first_name', 'last_name', )
+
+
+class UserSetupForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('account_type', )
+        widgets = {
+            'account_type': forms.HiddenInput()
+        }

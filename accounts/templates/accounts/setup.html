@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Account Setup{% endblock %}
+
+{% block content %}
+    <div id="accounts_setup">
+        <div class="row">
+            <div class="col-lg-12"><h1>{% trans "You are..." %}</h1></div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="well">
+                    <a class="account_type" data-type="TEACHER" href="#"><h2>{%  trans "Teacher" %}</h2></a>
+                    <p>Looking for students</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="well">
+                    <a class="account_type" data-type="PARENT" href="#"><h2>{%  trans "Parent" %}</h2></a>
+                    <p>Looking for teachers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form method="post" id="accounts_setup_form">
+        {% csrf_token %}
+        {{ form }}
+    </form>
+    <script>
+        (function($){
+            $(".account_type").click(function(e){
+                $("#id_account_type").val($(this).data('type'));
+                $("#accounts_setup_form").submit();
+                $(".account_type").unbind('click');
+                e.preventDefault();
+                return false;
+            });
+        })(jQuery);
+    </script>
+{% endblock %}

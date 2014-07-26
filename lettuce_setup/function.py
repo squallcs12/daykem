@@ -180,15 +180,26 @@ def eval_sql(sql):
 
 @step(u'I was a visitor')
 def i_was_a_visitor(step):
-    pass  # we dont need to do anything for now
+    pass  # we don't need to do anything for now
 
 
 @step(u'I was a logged in user')
-def i_was_a_logged_in_user(step, number=1):
+def i_was_a_logged_in_user(_, number=1):
+    i_was_a_registered_in_user(_, number)
+    i_first_login_into_my_account(_, number)
+
+
+@step(u'I was a registered in user')
+def i_was_a_registered_in_user(_, number=1):
+    world.users[number] = default_user(number)
+    world.user = world.users[number]
+
+@step(u'I first login into my account')
+def i_first_login_into_my_account(_, number=1):
+    world.user = world.users[number]
     visit_by_view_name('login')
-    user = default_user(number)
-    find("#id_username").send_keys(user.username)
-    find("#id_password").send_keys(user.raw_password)
+    find("#id_username").send_keys(world.user.username)
+    find("#id_password").send_keys(world.user.raw_password)
     find("#id_login").click()
     find("footer")
 

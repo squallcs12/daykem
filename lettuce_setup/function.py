@@ -16,7 +16,6 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.transaction import TransactionManagementError
 from django.utils.translation import ugettext_lazy
-from selenium.common.exceptions import NoSuchElementException
 
 from .selenium_shortcut import *
 from .short_dom import ShortDom
@@ -27,50 +26,6 @@ from accounts.models import User
 
 def trans(text):
     return ugettext_lazy(text).__unicode__()
-
-
-def has_class(self, class_name):
-    return class_name in self.get_attribute('class').split(' ')
-
-
-WebElement.has_class = has_class
-
-
-def should_has_class(self, class_name):
-    return self.has_class(class_name).should.be.ok
-
-
-WebElement.should_has_class = should_has_class
-
-
-def should_be_temp_link(self):
-    self.tag_name.should.equal('a')
-    self.get_attribute('href').should.equal(browser().current_url + '#')
-
-
-WebElement.should_be_temp_link = should_be_temp_link
-
-
-def fillin(self, value):
-    assert isinstance(self, WebElement)
-    if self.tag_name == 'textarea':
-        if self.value_of_css_property('display').lower() == 'none':
-            try:
-                cke_container = self.xpath('../div')
-                if cke_container.has_class('cke'):
-                    browser().switch_to_frame(cke_container.find(".cke_wysiwyg_frame"))
-                    find(".cke_editable").send_keys(value)
-                    browser().switch_to_default_content()
-                    return
-            except NoSuchElementException:
-                pass
-    self.clear()
-    self.send_keys(value)
-    obj = self
-    until(lambda: obj.get_attribute('value') == value)
-
-
-WebElement.fillin = fillin
 
 
 def django_url(url="", host='localhost'):
@@ -198,8 +153,8 @@ def i_was_a_registered_in_user(_, number=1):
 def i_first_login_into_my_account(_, number=1):
     world.user = world.users[number]
     visit_by_view_name('login')
-    find("#id_username").send_keys(world.user.username)
-    find("#id_password").send_keys(world.user.raw_password)
+    find("#id_username").fill_in(world.user.username)
+    find("#id_password").fill_in(world.user.raw_password)
     find("#id_login").click()
     find("footer")
 
@@ -242,14 +197,17 @@ def db_commit():
     try:
         connection.commit()
     except TransactionManagementError:
-        pass  # this is expteced error
+        pass  # this is expected error
 
 
-class datetime_fake:
+class DatetimeFake(object):
     timedelta = datetime.timedelta(0)
 
+    def __init__(self):
+        pass
+
     @classmethod
-    def timepass(cls, timedelta):
+    def time_pass(cls, timedelta):
         cls.timedelta += timedelta
 
     @classmethod

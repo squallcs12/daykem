@@ -11,7 +11,13 @@ class ShortDom(object):
     @classmethod
     def element_by_tagname_and_text(cls, tag, text, parent="body"):
         _xpath = ".//%s[.='%s']" % (tag, text)
-        for node in find_all(parent):
+        if isinstance(parent, basestring):
+            parent = find_all(parent)
+
+        if not isinstance(parent, list):
+            parent = [parent]
+
+        for node in parent:
             try:
                 return node.xpath(_xpath)
             except:

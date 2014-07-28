@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load angular %}
+
+{% block title %}Teacher classes{% endblock %}
+{% block head-js %}
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+    <script>
+        var app = angular.module('daykem', []);
+        function ManageClassCtrl($scope, $http){
+
+            function resetForm(){
+                $scope.class_number = '';
+                $scope.hour_salary_minimum = '';
+                $scope.hour_salary_maximum = '';
+                $scope.days_per_week = '';
+                $scope.hours_per_day = '';
+                $scope.available = false;
+            }
+            resetForm();
+
+            $scope.errors = [];
+            $scope.classes = [];
+
+            $scope.loadClasses = function(){
+                $http.get('/api/teacher/classes/')
+                        .success(function(data){
+                            $scope.classes = data['classes'];
+                        })
+                        .error(function(data){
+                            console.log(data);
+                        });
+            };
+
+            $scope.addClass = function(){
+                var class_data = {
+                    class_number: $scope.class_number,
+                    hour_salary_minimum: $scope.hour_salary_minimum,
+                    hour_salary_maximum: $scope.hour_salary_maximum,
+                    days_per_week: $scope.days_per_week,
+                    hours_per_day: $scope.hours_per_day,
+                    available: $scope.available
+                };
+                $scope.is_working = true;
+                $http.post('/api/teacher/classes/', class_data,
+                        {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'})
+                        .success(function(data){
+                            $scope.is_working = false;
+                            if(data['success']){
+                                $scope.classes.push(data['class']);
+                                resetForm();
+                            } else {
+                                console.log(data);
+                            }
+                        })
+                        .error(function(data){
+                            $scope.is_working = false;
+                            console.log(data);
+                        });
+            };
+
+            $scope.salaryPer4Weeks = function(){
+                var $min = $scope.hour_salary_minimum * 4 * $scope.days_per_week * $scope.hours_per_day;
+                var $max = $scope.hour_salary_maximum * 4 * $scope.days_per_week * $scope.hours_per_day;
+                return $min + " - " + $max;
+            };
+
+
+            $scope.is_working = false;
+            $scope.validateForm = function(){
+                $scope.errors = [];
+                if($scope.class_number == ''){
+                    $scope.errors.push('{% trans "You have to select the class." %}');
+                }
+                if($scope.hour_salary_minimum == null){
+                    $scope.errors.push('{% trans "You have to enter the Hour salary minimum salary per hour." %}');
+                }
+                if($scope.hour_salary_maximum == null){
+                    $scope.errors.push('{% trans "You have to enter the Hour salary maximum salary per hour." %}');
+                }
+                if($scope.days_per_week == ''){
+                    $scope.errors.push('{% trans "You have to select how many days per week for this class." %}');
+                }
+                if($scope.hours_per_day == ''){
+                    $scope.errors.push('{% trans "You have to enter how many hours per day for this class." %}');
+                }
+                if($scope.hour_salary_maximum && $scope.hour_salary_minimum){
+                    if(parseFloat($scope.hour_salary_minimum) > parseFloat($scope.hour_salary_maximum)){
+                        $scope.errors.push('{% trans "Maximum salary per hour must higher than minimum salary per hour." %}');
+                    }
+                }
+                return $scope.errors.length == 0;  // no error
+            };
+
+            $scope.hasError = function(){
+                return $scope.errors.length == 0;  // no error
+            };
+
+            $scope.state = function(){
+                if($scope.is_working){
+                    return 'btn-working';
+                }
+                if($scope.validateForm()){
+                    return 'btn-ready';
+                }
+                return 'btn-disabled';
+            };
+
+            $scope.loadClasses();
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div ng-controller="ManageClassCtrl">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>{% trans "Add new class" %}</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <form id="add_class" class="form-horizontal" ng-submit="addClass()">
+                    {% include 'general/form_render.html' with form=form|angular %}
+                    {% verbatim %}
+                    <div class="form-group">
+                        <label for="id_salary_per_4_weeks" class="col-lg-3 control-label">Salary per 4 weeks</label>
+                        <div class="col-lg-9">
+                            <input disabled="disabled" id="id_salary_per_4_weeks" type="text"
+                                   class="form-control" value="{{ salaryPer4Weeks() }}" />
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" class="btn btn-primary {{ state() }}">Add</button>
+                    </div>
+                    {% endverbatim %}
+                </form>
+            </div>
+            <div class="col-lg-4">
+                <div class="alert alert-danger" ng-hide="errors.length == 0">
+                    {% verbatim %}
+                    <ul class="errorlist">
+                        <li class="error" ng-repeat="error in errors">{{ error }}</li>
+                    </ul>
+                    {% endverbatim %}
+                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <h2>{% trans "Classes" %}</h2>
+            </div>
+            <div class="col-lg-12">
+                <table id="classes" class="table table-bordered table-hover">
+                    <tr>
+                        <th>{% trans "Class" %}</th>
+                        <th>{% trans "Hour salary" %}</th>
+                        <th>{% trans "Days per week" %}</th>
+                        <th>{% trans "Hours per day" %}</th>
+                        <th>{% trans "Salary per 4 weeks" %}</th>
+                        <th>{% trans "Available" %}</th>
+                    </tr>
+                {% verbatim %}
+                    <tr ng-repeat="class in classes">
+                        <td>{{ class.class_number }}</td>
+                        <td>{{ class.hour_salary_minimum }} - {{ class.hour_salary_maximum }}</td>
+                        <td>{{ class.days_per_week }}</td>
+                        <td>{{ class.hours_per_day }}</td>
+                        <td>{{ class.four_months_salary_minimum }} - {{ class.four_months_salary_maximum }}</td>
+                        <td>{{ class.available }}</td>
+                    </tr>
+                    <tr class="empty" ng-if="classes.length==0">
+                        <td colspan="6">You did not setup any classes.</td>
+                    </tr>
+                {% endverbatim %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

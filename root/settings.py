@@ -51,6 +51,7 @@ STATICFILES_FINDERS = (
 # Application definition
 
 INSTALLED_APPS = (
+    # django built-in apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,18 +59,25 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+
+    # 3rd party apps
     'lettuce.django',
     'south',
+    'postman',
     'django_extensions',
-    'accounts',
     'social.apps.django_app.default',
     'awesome_avatar',
-    'postman',
+
+    # custom apps
+    'accounts',
+    'teacher',
+    'parent',
     'common',
 )
 
 LETTUCE_APPS = (
     'accounts',
+    'teacher',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -4,6 +4,7 @@ Created on Aug 25, 2013
 @author: antipro
 '''
 from selenium.common.exceptions import NoSuchWindowException
+from social.apps.django_app.default.models import UserSocialAuth
 from lettuce_setup.function import *
 from django.conf import settings
 
@@ -16,9 +17,10 @@ def i_login_using_my_facebook_account(step):
         browser().find_element_by_name('__CONFIRM__').click()
     except NoSuchElementException:
         if find_all("#email"):
-            find("#email").fillin("lisa_ubhedvc_narayananman@tfbnw.net")
-            find("#pass").fillin(settings.TEST_PASSWORD)
+            find("#email").fill_in("lisa_ubhedvc_narayananman@tfbnw.net")
+            find("#pass").fill_in(settings.TEST_PASSWORD)
             find("#loginbutton").click()
+    world.user = UserSocialAuth.objects.filter(provider='facebook')[0].user
 
 
 @step(u'I was asked to update my account password')
@@ -81,22 +83,22 @@ def my_account_was_associated_with_facebook_twitter_and_google(step):
     len(find_all("#social_accounts .social-google-plus")).should.equal(1)
 
 
-@step(u'When I go to the login page')
+@step(u'I go to the login page')
 def when_i_go_to_the_login_page(step):
     visit_by_view_name('login')
 
 
-@step(u'Then I did not see the login form')
+@step(u'I did not see the login form')
 def then_i_did_not_see_the_login_form(step):
     len(find_all("#login_form")).should.equal(0)
 
 
-@step(u'And I see the notification that I am currently login')
+@step(u'I see the notification that I am currently login')
 def and_i_see_the_notification_that_i_am_currently_login(step):
     find("body").text.should.contain(trans(u"You are currently logged in as"))
 
 
-@step(u'Then my account was associated with facebook')
+@step(u'my account was associated with facebook')
 def then_my_account_was_associated_with_facebook(step):
     visit_by_view_name('accounts_social_list')
     len(find_all("#social_accounts .social-facebook")).should.equal(1)

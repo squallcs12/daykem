@@ -6,14 +6,13 @@ Created on 26/07/2014
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
-__author__ = 'antipro'
-
 
 class SetupMiddleware(object):
 
     IGNORE_PATHS = [
         reverse('accounts_setup'),
-        reverse('login'),
+        reverse('set_user_password'),
+        reverse('password_set_done'),
     ]
 
     def process_request(self, request):

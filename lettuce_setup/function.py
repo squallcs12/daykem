@@ -122,6 +122,8 @@ def default_user(number=1):
 def clear_user(scenario):
     User.objects.all().delete()
     world.users = {}
+    if hasattr(world, 'user'):
+        del world.user
 
 
 def eval_sql(sql):
@@ -157,6 +159,25 @@ def i_first_login_into_my_account(_, number=1):
     find("#id_password").fill_in(world.user.raw_password)
     find("#id_login").click()
     find("footer")
+
+
+@step(u'I set my account type to "([^"]*)"')
+def i_set_my_account_type_to(_, account_type):
+    world.user.account_type = account_type
+    world.user.save()
+    db_commit()
+
+
+@step(u'I was a logged in "([^"]*)" user')
+def i_was_a_logged_in_group_user(_, account_type):
+    i_was_a_registered_in_user(_)
+    i_set_my_account_type_to(_, account_type)
+    i_first_login_into_my_account(_)
+
+
+@step(u'I go to "([^"]*)" page')
+def i_go_to_group1_page(_, page_name):
+    visit_by_view_name(page_name)
 
 
 def super_group():
